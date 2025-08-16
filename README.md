@@ -1,3 +1,61 @@
+# Caso de Estudio
+Actualmente somos una startup en crecimiento y queremos crear una aplicación que compita con Obsidian, una plataforma popular para tomar notas. El objetivo es desarrollar un MVP que permita a los usuarios gestionar notas de forma eficiente, añadiendo etiquetas, organizándolas por categorías y utilizando funciones avanzadas como búsqueda y archivo.
+
+# Implementacion 
+- Implementación completa de los requerimientos funcionales básicos: CRUD para notas y usuarios, autenticación, roles y validaciones.
+- Uso de una arquitectura modular y limpia, siguiendo principios SOLID y patrones como MVC. Cada microservicio está desacoplado y bien definido.
+- Código legible y mantenible, con nombres descriptivos, funciones concisas y comentarios útiles en todas las capas.
+- Manejo adecuado de errores y excepciones, respuestas claras y consistentes (códigos de estado HTTP y mensajes descriptivos).
+- Diseño eficiente de esquemas, consultas optimizadas y uso correcto de transacciones y relaciones (PostgreSQL) y colecciones (MongoDB).
+- Optimización del rendimiento, tiempos de respuesta rápidos, uso eficiente de recursos y diseño preparado para escalar horizontalmente.
+
+# Arquitectura
+
+El sistema está basado en una arquitectura de microservicios, donde cada servicio cumple una función específica y se comunica a través de un API Gateway centralizado. El API Gateway gestiona la autenticación y enruta las solicitudes a los microservicios correspondientes. Además, se utiliza Eureka como Discovery Service para la gestión dinámica y escalable de los servicios.
+
+**Flujo principal de interacción:**
+- Cliente → API Gateway → Auth Service → Response
+- Cliente → API Gateway (verifica el token de autenticación) → User Service o Notes Service
+
+**Centralización:**
+Todo el tráfico y la lógica de autenticación pasan por el API Gateway, que actúa como punto único de entrada y control.
+
+**Base de datos:**
+- El servicio de notas utiliza **MongoDB** para almacenar la información de las notas, permitiendo flexibilidad y eficiencia en la gestión de datos no estructurados.
+- Los demás servicios utilizan **PostgreSQL** para persistencia relacional.
+
+## Diagrama de Casos de Uso (UML)
+
+El siguiente diagrama muestra los principales flujos de interacción entre los actores y los microservicios del sistema:
+
+```uml
+@startuml
+actor Usuario
+actor API_Gateway
+actor Auth_Service
+actor User_Service
+actor Note_Service
+
+Usuario --> API_Gateway: Solicita autenticación
+API_Gateway --> Auth_Service: Envía credenciales
+Auth_Service --> API_Gateway: Retorna token JWT
+API_Gateway --> Usuario: Retorna token JWT
+
+Usuario --> API_Gateway: Solicita acceso a notas/usuarios
+API_Gateway --> Auth_Service: Verifica token JWT
+API_Gateway --> User_Service: Solicitud de datos de usuario
+API_Gateway --> Note_Service: Solicitud de datos de notas
+Note_Service --> MongoDB: Consulta/guarda notas
+User_Service --> PostgreSQL: Consulta/guarda usuarios
+@enduml
+```
+
+### Casos de uso principales
+
+- Registro y autenticación de usuarios
+- Gestión de notas (crear, editar, buscar, archivar, etiquetar)
+- Gestión de usuarios y roles
+
 # MVP NOTES APP - Monorepo
 
 Este repositorio contiene varios microservicios para una aplicación de notas, implementados con Spring Boot y arquitectura de microservicios.
@@ -132,4 +190,4 @@ Las dependencias específicas están definidas en los archivos `pom.xml` de cada
 
 ## Base de datos
 
-- **PostgreSQL**: Todos los servicios que requieren persistencia utilizan PostgreSQL. Configura la conexión en los archivos `application.properties`.
+- **PostgreSQL Y MONGO**: Todos los servicios que requieren persistencia. Configura la conexión en los archivos `application.properties`.
